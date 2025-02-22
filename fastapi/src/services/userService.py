@@ -1,13 +1,19 @@
 from repository.user_repo import UserRepo
-from models.users import Users
+from schemas.authentication import RegistrationReq , LoginReq
 import bcrypt
 
 class UserService:
     @staticmethod
-    def RegisterUser(user : Users):
+    def RegisterUser(user : RegistrationReq):
         """Register a user after checking if email is not exists"""
+        ifUserPresent = UserRepo.findUserByEmail(user.email)
+        if ifUserPresent:
+            return{
+                "error":"User Already Exists"
+            }
 
         print("service " , user)
+
         hash_password =  bcrypt.hashpw(user.password.encode('utf-8') , bcrypt.gensalt())
         user.password = hash_password.decode('utf-8')
         newUser =UserRepo.insertUser(user)
@@ -18,4 +24,33 @@ class UserService:
             "role": newUser["role"],
             "isVerified": newUser["isVerified"],
             "message": "User registered successfully!"
+        }
+    
+    @staticmethod
+    def LoginUser(user : LoginReq):
+        """Login a user by checking email exists"""
+        ifUserPresent = UserRepo.findUserByEmail(user.email)
+        if ifUserPresent is None:
+            return{
+                "error":"Please Logon First"
+            }
+        print("service login " , ifUserPresent)
+        return{
+            "messge":"Login success",
+            "email":ifUserPresent["email"],
+            "password":ifUserPresent["password"]
+        }
+    
+    @staticmethod
+    def GetUserByEmail(email : str):
+        """Get user by email"""
+        user = UserRepo.findUserByEmail(email)
+        if user is None:
+            return{
+                "error":"User not found"
+            }
+        return{
+            "name": user["name"],
+            "email": user["email"],
+            "avatar": user["avatar"],
         }

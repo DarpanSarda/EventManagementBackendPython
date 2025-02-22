@@ -15,6 +15,20 @@ class RegistrationRes(BaseModel):
     email: EmailStr
     name :str
     message: str
+    error: Optional[str] = None
+    token: Optional[str] = None
+    tokenType: Optional[str] = None
+
+class LoginReq(BaseModel):
+    email: EmailStr
+    password: str
+
+class LoginRes(BaseModel):
+    email: EmailStr
+    message: Optional[str] = None
+    error : Optional[str] = None
+    token: Optional[str] = None
+    tokenType: Optional[str] = None
 
 class OTPVerificationReq(BaseModel):
     email: EmailStr

@@ -1,11 +1,14 @@
 from fastapi import APIRouter , HTTPException
-from schemas.authentication import RegistrationReq , RegistrationRes 
+from schemas.authentication import RegistrationReq , RegistrationRes , LoginReq , LoginRes 
 from services.userService import UserService
+from utils.jwt_config import create_access_token
+
 
 authRouter = APIRouter(
     tags=["auth"],
     prefix="/auth"
 )
+
 
 @authRouter.post("/register" , response_model=RegistrationRes)
 def user_register(user : RegistrationReq):
@@ -15,8 +18,29 @@ def user_register(user : RegistrationReq):
     if "error" in response:
         raise HTTPException(status_code = 400 , detail = response["error"])
 
+    access_token = create_access_token(data={"sub": user.email})
     return{
         "name" : response["name"],
         "email" : response["email"],
+        "token" : access_token,
+        "tokenType" : "bearer",
         "message" : "User Registered Sucessfully"
+    }
+
+@authRouter.post("/login" , response_model = LoginRes)
+def login_user(user : LoginReq):
+    print("router login" , user)
+
+    response = UserService.LoginUser(user)
+    print(f"response : {response}")
+    if "error" in response:
+        raise HTTPException(status_code = 400 , detail = response["error"])
+    
+    access_token = create_access_token(data={"sub": user.email})
+
+    return{
+        "email" : response["email"],
+        "token" : access_token,
+        "tokenType" : "bearer",
+        "message" : "User LoggedIn Sucessfully"
     }

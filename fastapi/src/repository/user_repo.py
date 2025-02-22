@@ -1,28 +1,35 @@
-from db.connect import connect_database
+from db.connect import MongoDBSingleton
 from models import users
+from schemas.authentication import RegistrationReq
 
-db = connect_database()
+db = MongoDBSingleton().get_database()
+
 if db is not None:
-    database = db["eventManagement"]
-    user_collection = database["users"]
+    user_collection = db["users"]
 else:
     user_collection = None
 class UserRepo():
+
     @staticmethod
-    def insertUser(userData : users)->dict:
+    def findUserByEmail(email : str):
+        returnedUser = user_collection.find_one({"email" : email})
+        return returnedUser
+
+    @staticmethod
+    def insertUser(userData : RegistrationReq)->dict:
         """To insert the user in the db"""
         print("repository " , userData)
         if user_collection is None:
             raise Exception("Database connection failed")
         new_user = {
-            "name" : userData.name,
-            "lastname" : userData.lastname,
-            "email" : userData.email,
-            "avatar" : userData.avatar or "",
-            "password" : userData.password,
-            "otp" : userData.otp or 0,
-            "role" : userData.role or "user",
-            "isVerified" : userData.isVerified or False,
+            "name": userData.name,
+            "lastname": userData.lastname,
+            "email": userData.email,
+            "password": userData.password,
+            "avatar": userData.avatar if userData.avatar is not None else "",
+            "otp": userData.otp if userData.otp is not None else 0,
+            "role": userData.role if userData.role is not None else "user",
+            "isVerified": userData.isVerified if userData.isVerified is not None else False,
         }
         returned_user = user_collection.insert_one(new_user)
         print("repo response" , returned_user)
