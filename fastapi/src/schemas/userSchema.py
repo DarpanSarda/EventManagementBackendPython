@@ -1,9 +1,8 @@
-from pydantic import BaseModel
+from pydantic import BaseModel , EmailStr
 from typing import Optional
 
 class UserProfileRes(BaseModel):
-    name: Optional[str]
-    email: Optional[str]
-    avatar: Optional[str]
-    message: Optional[str]
-    error: Optional[str]
+    name: str
+    email: EmailStr
+    avatar: Optional[str] = None
+    message: str

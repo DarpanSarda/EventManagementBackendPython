@@ -1,5 +1,6 @@
-from pydantic import BaseModel, EmailStr , Field
-from typing import Optional
+from pydantic import BaseModel , Field
+from models.category import Category
+from typing import List , Optional
 from bson import ObjectId
 
 class PyObjectId(str):
@@ -15,13 +16,17 @@ class PyObjectId(str):
         return str(v)  # Convert to string for JSON serialization
 
 
-class Users(BaseModel):
+class Event(BaseModel):
     id: Optional[PyObjectId] = Field(None, alias="_id")
     name: str
-    lastname: str
-    email: EmailStr
-    avatar: Optional[str] = None
-    password: str = Field(..., min_length=8)
-    otp: Optional[int] = None
-    role: Optional[str] = "user"
-    isVerified: bool = False
+    description: str
+    startDate: str
+    endDate: str
+    state: str
+    city: str
+    price: float
+    image: str
+    category: PyObjectId
+    venue: str
+    tags: List[str]
+    organizer: str
