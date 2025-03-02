@@ -1,4 +1,3 @@
-from models import event
 from db.connect import MongoDBSingleton
 from bson import ObjectId
 from schemas.eventSchema import EventSchemaAdminReq
