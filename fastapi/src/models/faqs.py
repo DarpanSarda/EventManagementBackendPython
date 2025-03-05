@@ -1,5 +1,4 @@
-from pydantic import BaseModel , Field
-from models.users import Users
+from pydantic import BaseModel, Field
 from typing import Optional
 from bson import ObjectId
 
@@ -15,8 +14,7 @@ class PyObjectId(str):
             raise ValueError("Invalid ObjectId")
         return str(v)  # Convert to string for JSON serialization
 
-
-class Feedback(BaseModel):
+class FAQs(BaseModel):
     id: Optional[PyObjectId] = Field(None, alias="_id")
-    feedback : str
-    user : PyObjectId
+    Question : str
+    Answer : str
