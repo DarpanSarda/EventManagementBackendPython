@@ -1,7 +1,6 @@
-from pydantic import BaseModel , Field
-from typing import List , Optional
-from models.users import Users
-from models.event import Event
+from pydantic import BaseModel, Field
+from typing import Optional, List, Dict
+from datetime import datetime
 from bson import ObjectId
 
 class PyObjectId(str):
@@ -16,12 +15,20 @@ class PyObjectId(str):
             raise ValueError("Invalid ObjectId")
         return str(v)  # Convert to string for JSON serialization
 
+
 class Booking(BaseModel):
-    user : PyObjectId
-    event : PyObjectId
-    bookingDate : str
-    status : str
-    totalAmount : float
-    totalTickets : int
-    adults : List[str]
-    children : List[str]
+    id: Optional[PyObjectId] = Field(None, alias="_id")
+    user_id: PyObjectId
+    event_id: PyObjectId
+    ticket_id: Optional[PyObjectId] = None
+    payment_id: Optional[PyObjectId] = None
+    booking_number: str
+    slot_name: str
+    quantity: int
+    total_amount: float
+    status: str
+    booking_date: datetime
+    attendee_details: Optional[List[Dict[str, str]]]
+    special_requests: Optional[str] = None
+    created_at: datetime
+    updated_at: Optional[datetime] = None

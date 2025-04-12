@@ -40,6 +40,7 @@ class EventSchemaRes(BaseModel):
         arbitrary_types_allowed = True
 
 class EventSchemaAdminReq(BaseModel):
+    id:str
     name : str
     category : str
     state : str

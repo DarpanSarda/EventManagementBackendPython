@@ -14,7 +14,7 @@ class EventsRepo():
     @staticmethod
     async def findEvents():
         print(f"inside findevents")
-        events_cursor = events_collection.find({}, {'_id': 0})
+        events_cursor = events_collection.find({})
         events = events_cursor.to_list(length=None)
         print(f"events repo {events}")
         return events
