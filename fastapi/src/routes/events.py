@@ -21,7 +21,7 @@ def convert_objectid_to_str(data):
         return str(data)  # Convert ObjectId to string
     return data  # Return as is if it's not an ObjectId
 
-@eventRouter.get("/", response_model=List[EventSchemaAdminReq])
+@eventRouter.get("/")
 async def get_events():
     try:
         events = await EventService.getEvents()
@@ -31,6 +31,7 @@ async def get_events():
                 "status": "success",
                 "data": events,
             }
+            print(f"events : {events}")
             return JSONResponse(content=response, status_code=status.HTTP_200_OK)
         response = {
             "status": "failed",
@@ -44,28 +45,22 @@ async def get_events():
         }
         return JSONResponse(content=response, status_code=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
-@eventRouter.post("/", dependencies=[Depends(admin_only)] , response_model=EventSchemaAdminReq)
+@eventRouter.post("/" , response_model=EventSchemaAdminReq)
 async def create_event(event: EventSchemaAdminReq):
     try:
-        event_dict = event.model_dump()  # Use .dict() if using Pydantic v1
-
-        # Ensure ObjectId fields are properly set (if required)
-        event_dict["_id"] = ObjectId()  # Optional: Assign a new ObjectId if MongoDB does not auto-generate it
-
-        # Insert into MongoDB
-        event = EventService.createEvent(event_dict)
+        event = await EventService.createEvent(event)
         if event is not None:
-            event = convert_objectid_to_str(event)  # Convert ObjectId fields to strings
             response = {
                 "status": "success",
                 "data": event,
+                "message": "Event created successfully",
             }
-            return JSONResponse(content=response, status_code=status.HTTP_201_CREATED)
+            return await JSONResponse(content=response, status_code=status.HTTPStatus.CREATED)
         response = {
             "status": "failed", 
             "message": "Event creation failed",
         }
-        return JSONResponse(content=response, status_code=status.HTTP_400_BAD_REQUEST)
+        return await JSONResponse(content=response, status_code=status.HTTPStatus.BAD_REQUEST)
     except Exception as e:
         response = {
             "status": "error",
@@ -149,6 +144,7 @@ async def get_event(event_id: str):
                 "status": "success",
                 "data": event,
             }
+            print(f"event : {event}")
             return JSONResponse(content=response, status_code=status.HTTP_200_OK)
         
         response = {

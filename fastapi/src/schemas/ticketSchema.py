@@ -49,8 +49,12 @@ class TicketSchemaRes(BaseModel):
     attendee_info: Optional[List[str]] = None
     user: PyObjectId
     event: PyObjectId
+    event_detail: Optional[dict] = None
     ticket_number: str
     payment_status: str
     payment_method: str
     qr_code: Optional[str] = None
     payment_id: Optional[PyObjectId] = None
+
+class TicketSchemaUpdate(BaseModel):
+    payment_status: str

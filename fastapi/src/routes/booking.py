@@ -56,6 +56,16 @@ async def get_user_bookings(user_id: str):
     print(f"get_user_bookings called with user_id: {user_id}")
     try:
         result = await BookingService.get_user_bookings(user_id)
+        print(f"jhsfhds : {result}")
+        def serialize_booking(booking):
+            booking["_id"] = str(booking["_id"])
+            booking["user_id"] = str(booking["user_id"])
+            booking["event_id"] = str(booking["event_id"])
+            booking["booking_date"] = booking["booking_date"].isoformat() if booking.get("booking_date") else None
+            booking["created_at"] = booking["created_at"].isoformat() if booking.get("created_at") else None
+            booking["updated_at"] = booking["updated_at"].isoformat() if booking.get("updated_at") else None
+            return booking
+        result = [serialize_booking(booking) for booking in result]
         return {"message": "User bookings retrieved successfully", "data": result}
     except HTTPException as e:
         raise e

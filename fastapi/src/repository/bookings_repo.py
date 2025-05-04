@@ -89,7 +89,7 @@ class BookingRepo:
                 raise Exception("Invalid user ID format")
                 
             cursor = bookings_collection.find(
-                {"user_id": user_id}
+                {"user_id": ObjectId(user_id)}
             ).sort("created_at", -1)
             print(f"cursor : {cursor.count()}")
             tickets = []

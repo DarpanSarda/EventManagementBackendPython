@@ -1,3 +1,4 @@
+from models import event
 from db.connect import MongoDBSingleton
 from bson import ObjectId
 from schemas.eventSchema import EventSchemaAdminReq
@@ -13,128 +14,50 @@ class EventsRepo():
 
     @staticmethod
     async def findEvents():
-        print(f"inside findevents")
-        events_cursor = events_collection.find({})
-        events = events_cursor.to_list(length=None)
-        print(f"events repo {events}")
-        return events
+        try:
+            if events_collection is None:
+                raise Exception("Database connection not initialized")
+    
+            print("Fetching events from database...")
+            # Remove the '_id': 0 projection to allow ID conversion
+            events_cursor = events_collection.find({})
+            events = []
+            for event in events_cursor:
+                events.append(event)
+
+            # Transform the events to handle ObjectId
+            transformed_events = []
+            for event in events:
+                event['_id'] = str(event['_id'])  # Convert ObjectId to string
+                transformed_events.append(event)
+    
+            print(f"Found {len(transformed_events)} events")
+            return transformed_events
+    
+        except Exception as e:
+            print(f"Error in findEvents: {str(e)}")
+            raise Exception(f"Failed to fetch events: {str(e)}")
     
     @staticmethod
-    def findEventById(eventId: str):
-        """
-        Find an event by its ID
-        Args:
-            eventId (str): The ID of the event to find
-        Returns:
-            dict: The event document if found, None if not found
-        Raises:
-            Exception: If there's an error during the database operation
-        """
-        try:
-            if events_collection is None:
-                raise Exception("Database connection failed")
-            
-            if not ObjectId.is_valid(eventId):
-                raise Exception("Invalid event ID format")
-                
-            event = events_collection.find_one({"_id": ObjectId(eventId)})
-            return event
-            
-        except Exception as e:
-            raise Exception(f"Error finding event: {str(e)}")
-        
+    def findEventById(eventId : str):
+        return events_collection.find_one({"_id": ObjectId(eventId)})
+    
     @staticmethod
-    def findEventByName(eventName: str):
-        """
-        Find an event by its name
-        
-        Args:
-            eventName (str): The name of the event to find
-            
-        Returns:
-            list: List of event documents if found, empty list if not found
-            
-        Raises:
-            Exception: If there's an error during the database operation
-        """
-        try:
-            if events_collection is None:
-                raise Exception("Database connection failed")
-                
-            if not eventName or not isinstance(eventName, str):
-                raise Exception("Invalid event name")
-                
-            cursor = events_collection.find({"name": eventName})
-            events = list(cursor)  # Convert cursor to list
-            return events
-            
-        except Exception as e:
-            raise Exception(f"Error finding event by name: {str(e)}")
+    def findEventByName(eventName : str):
+        return events_collection.find_one({"name": eventName})
     
     @staticmethod
     def findEventByCategory(eventCategory : str):
         return events_collection.find_one({"category": eventCategory})
     
     @staticmethod
-    def findEventByStateName(stateName: str):
-        """
-        Find events by state name
-        
-        Args:
-            stateName (str): The state name to find events for
-            
-        Returns:
-            list: List of event documents if found, empty list if not found
-            
-        Raises:
-            Exception: If there's an error during the database operation
-        """
-        try:
-            if events_collection is None:
-                raise Exception("Database connection failed")
-                
-            if not stateName or not isinstance(stateName, str):
-                raise Exception("Invalid state name")
-                
-            cursor = events_collection.find({"state": stateName})
-            events = list(cursor)  # Convert cursor to list
-            return events
-            
-        except Exception as e:
-            raise Exception(f"Error finding events by state: {str(e)}")
+    def findEventByStateName(stateName : str):
+        return events_collection.find_one({"state": stateName})
     
     @staticmethod
-    def findEventByCityName(stateName: str, cityName: str):
-        """
-        Find events by state name and city name
-        
-        Args:
-            stateName (str): The state name to find events for
-            cityName (str): The city name to find events for
-            
-        Returns:
-            list: List of event documents if found, empty list if not found
-            
-        Raises:
-            Exception: If there's an error during the database operation
-        """
-        try:
-            if events_collection is None:
-                raise Exception("Database connection failed")
-                
-            if not stateName or not isinstance(stateName, str):
-                raise Exception("Invalid state name")
-                
-            if not cityName or not isinstance(cityName, str):
-                raise Exception("Invalid city name")
-                
-            cursor = events_collection.find({"state": stateName, "city": cityName})
-            events = list(cursor)  # Convert cursor to list
-            return events
-            
-        except Exception as e:
-            raise Exception(f"Error finding events by city: {str(e)}")
-        
+    def findEventByCityName(stateName : str , cityName : str):
+        return events_collection.find_one({"state": stateName , "city": cityName})
+    
     @staticmethod
     def createEvent(event : EventSchemaAdminReq):
         """Create event"""

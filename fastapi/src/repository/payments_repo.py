@@ -1,7 +1,7 @@
 from db.connect import MongoDBSingleton
 from bson import ObjectId
 from pymongo.errors import PyMongoError
-from typing import Optional, Dict
+from typing import Optional, Dict ,List
 from datetime import datetime
 from models.payment import Payment
 
@@ -129,3 +129,14 @@ class PaymentRepo:
         except Exception as e:
             print(f"Error updating payment: {str(e)}")
             raise Exception(f"Error updating payment: {str(e)}")
+        
+    
+    async def get_all_payments() -> List[dict]:
+        payments_cursor = payments_collection.find({})
+        payments = []
+        for payment in payments_cursor:
+            payments.append(payment)
+        return payments
+
+    async def get_payment_by_id(payment_id: str) -> Optional[dict]:
+        return await payments_collection.find_one({"_id": ObjectId(payment_id)})

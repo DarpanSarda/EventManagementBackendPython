@@ -95,7 +95,7 @@ class TicketsRepo:
             PyMongoError: If there's an error during database operation
             Exception: For any other unexpected errors
         """
-        print(f"Getting tickets for user with ID: {user_id}")
+        # print(f"Getting tickets for user with ID: {user_id}")
         try:
             if tickets_collection is None:
                 raise Exception("Database connection not established")
@@ -107,7 +107,7 @@ class TicketsRepo:
             tickets = []
             for ticket in cursor:
                 tickets.append(ticket)
-            print(f"Tickets found: {tickets}")
+            # print(f"Tickets found: {tickets}")
             return tickets
             
         except PyMongoError as e:
@@ -368,3 +368,32 @@ class TicketsRepo:
         except Exception as e:
             print(f"Error deleting ticket: {str(e)}")
             raise Exception(f"Error deleting ticket: {str(e)}")
+        
+    async def get_all_tickets() -> List[Dict]:
+        """
+        Retrieve all tickets from the database
+        
+        Returns:
+            List[Dict]: A list of ticket documents
+            
+        Raises:
+            PyMongoError: If there's an error during database operation
+            Exception: For any other unexpected errors
+        """
+        try:
+            if tickets_collection is None:
+                raise Exception("Database connection not established")
+                
+            tickets_cursor = await tickets_collection.find().to_list(length=None)
+            tickets = []
+            for ticket in tickets_cursor:
+                tickets.append(ticket)
+            return tickets
+            
+        except PyMongoError as e:
+            print(f"Database error occurred: {str(e)}")
+            raise Exception(f"Database error occurred: {str(e)}")
+        except Exception as e:
+            print(f"Error retrieving tickets: {str(e)}")
+            raise Exception(f"Error retrieving tickets: {str(e)}")
+        

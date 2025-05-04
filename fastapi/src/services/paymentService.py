@@ -1,12 +1,19 @@
-from typing import Optional, Dict
+from typing import Optional, Dict , List
 from schemas.paymentSchema import PaymentSchemaReq
 from repository.payments_repo import PaymentRepo
 import razorpay
+from razorpay.errors import SignatureVerificationError
+import os
+from dotenv import load_dotenv
 
 class PaymentService:
-    def __init__(self, client_id: str, client_secret: str):
+    def __init__(self):
+        client_id ="rzp_test_rJSE0fMsM9i0lv"
+        client_secret = "bowX7pTbpno8sbVFugSpcHGo"
         self.client = razorpay.Client(auth=(client_id, client_secret))
-
+        print(f"client_id {client_id} , client_secret {client_secret}")
+        print(f"selct client {self.client}")
+        
     async def create_payment(self, payment_data: PaymentSchemaReq) -> Dict:
         """
         Create a new payment and initiate Razorpay order
@@ -22,13 +29,34 @@ class PaymentService:
         """
         print(f"create payment {payment_data}")
         try:
-            # Create Razorpay order
-            razorpay_order = self.client.order.create({
-                "amount": int(payment_data.amount * 100),  # Amount in paise
-                "currency": payment_data.currency,
-                "payment_capture": 1
-            })
+            if not payment_data.amount or payment_data.amount <= 0:
+                raise ValueError("Amount must be greater than 0")
             
+            if not payment_data.currency or payment_data.currency not in ["INR", "USD"]:
+                raise ValueError("Invalid currency. Supported currencies: INR, USD")
+
+            amount = int(payment_data.amount * 100)  # Convert to paise
+            currency = payment_data.currency
+            print(f"amount {amount} , currency {currency}")
+            # Create Razorpay order
+            order_data = {
+            "amount": amount,
+            "currency": currency,
+            "payment_capture": 1,
+            "notes": {
+                "payment_for": "Event Registration"
+            }
+            }
+        
+            print(f"Attempting to create Razorpay order with data: {order_data}")
+            try:
+                razorpay_order = self.client.order.create(
+                    data = order_data
+                )   
+                print(f"Razorpay order created successfully: {razorpay_order}")
+            except Exception as razorpay_error:
+                print(f"Error creating Razorpay order: {razorpay_error}")
+                raise Exception("Failed to create Razorpay order") 
             # Prepare payment data with Razorpay order details
             payment_record = {
                 **payment_data.dict(),
@@ -43,6 +71,7 @@ class PaymentService:
             raise Exception(f"Error creating payment: {str(e)}")
 
     async def verify_payment(self, razorpay_payment_id: str, razorpay_order_id: str, razorpay_signature: str) -> bool:
+        print(f"verify payment {razorpay_payment_id}, {razorpay_order_id}, {razorpay_signature}")
         """
         Verify Razorpay payment signature
         
@@ -88,3 +117,10 @@ class PaymentService:
             return await PaymentRepo.update_payment_status(payment_id, status)
         except Exception as e:
             raise Exception(f"Error updating payment status: {str(e)}")
+        
+    async def get_all_payments(self) -> List[Dict]:
+        print("get all payments")
+        return await PaymentRepo.get_all_payments()
+    
+    async def get_payment_by_id(self,payment_id: str) -> Optional[Dict]:
+        return await PaymentRepo.get_payment_by_id(payment_id)

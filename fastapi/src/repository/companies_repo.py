@@ -26,7 +26,9 @@ class CompanyRepo():
                 
             print("Inside findcompanies")
             companies_cursor = companies_collection.find({}, {'_id': 0})
-            companies = companies_cursor.to_list(length=None)
+            companies = []
+            for company in companies_cursor:
+                companies.append(company)
             print(f"companies repo {companies}")
             return companies
             

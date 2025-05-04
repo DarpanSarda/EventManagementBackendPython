@@ -29,8 +29,9 @@ class PaymentSchemaReq(BaseModel):
     amount: float
     currency: str = "INR"
 
+
 class PaymentSchemaRes(BaseModel):
-    id: Optional[PyObjectId] = Field(None, alias="_id")
+    id: Optional[str] = Field(None, alias="_id")
     ticket_id: str
     user_id: str
     amount: float
@@ -39,7 +40,7 @@ class PaymentSchemaRes(BaseModel):
     razorpay_payment_id: Optional[str] = None
     razorpay_order_id: Optional[str] = None
     razorpay_signature: Optional[str] = None
-    created_at: datetime
+    created_at: Optional[datetime] = None  # Made optional
     updated_at: Optional[datetime] = None
 
     class Config:
@@ -49,3 +50,8 @@ class PaymentSchemaRes(BaseModel):
             datetime: lambda dt: dt.isoformat(),
             ObjectId: str,  # For serializing ObjectId to string
         }
+
+class VerifyPaymentSchema(BaseModel):
+    razorpay_payment_id: str
+    razorpay_order_id: str
+    razorpay_signature: str

@@ -11,7 +11,7 @@ class EventService:
         return events
     
     @staticmethod
-    def getEventById(eventId: str):
+    async def getEventById(eventId: str):
         """
         Get event by ID from the database
         

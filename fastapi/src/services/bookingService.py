@@ -59,6 +59,7 @@ class BookingService:
 
             # Call the repository to get user bookings
             result = await BookingRepo.get_user_bookings(user_id)
+            print(f"get_user_bookings result: {result}")
             return result
         except PyMongoError as e:
             raise HTTPException(status_code=500, detail="Database error occurred")

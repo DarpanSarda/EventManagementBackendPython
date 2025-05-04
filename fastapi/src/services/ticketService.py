@@ -55,7 +55,7 @@ class TicketService:
         """
         try:
             tickets = await TicketsRepo.get_tickets_by_user(user_id)
-            print(f"Tickets found: {tickets}")
+            # print(f"Tickets found: {tickets}")
             return tickets
         except Exception as e:
             raise Exception(f"Error retrieving user tickets: {str(e)}")
@@ -294,3 +294,20 @@ class TicketService:
             }
         except Exception as e:
             raise Exception(f"Error verifying ticket: {str(e)}")
+
+    @staticmethod
+    async def get_all_tickets() -> List[Dict]:
+        """
+        Get all tickets
+        
+        Returns:
+            List[Dict]: List of all tickets
+            
+        Raises:
+            Exception: If there's an error retrieving tickets
+        """
+        try:
+            tickets = await TicketsRepo.get_all_tickets()
+            return tickets
+        except Exception as e:
+            raise Exception(f"Error retrieving tickets: {str(e)}")
