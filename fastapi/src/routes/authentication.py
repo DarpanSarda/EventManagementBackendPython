@@ -39,6 +39,7 @@ def login_user(user : LoginReq):
     access_token = create_access_token(data={"sub": user.email})
 
     return{
+        "id" : str(response["_id"]),
         "email" : response["email"],
         "token" : access_token,
         "tokenType" : "bearer",

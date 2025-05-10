@@ -11,6 +11,7 @@ from routes.faqs import faqRouter
 from routes.ticket import ticketrouter
 from routes.payments import paymentrouter
 from routes.booking import bookingRouter
+from routes.offers import offerRouter
 
 app = FastAPI()
 
@@ -38,6 +39,7 @@ app.include_router(faqRouter)
 app.include_router(ticketrouter)
 app.include_router(paymentrouter)
 app.include_router(bookingRouter)
+app.include_router(offerRouter)
 
 #Connect to Db
 db = MongoDBSingleton().get_database()

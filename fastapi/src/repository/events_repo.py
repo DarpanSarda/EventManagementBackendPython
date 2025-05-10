@@ -39,8 +39,10 @@ class EventsRepo():
             raise Exception(f"Failed to fetch events: {str(e)}")
     
     @staticmethod
-    def findEventById(eventId : str):
-        return events_collection.find_one({"_id": ObjectId(eventId)})
+    async def findEventById(eventId : str):
+        event = events_collection.find_one({"_id": ObjectId(eventId)})
+        print(f"eventttt {event}")
+        return event
     
     @staticmethod
     def findEventByName(eventName : str):

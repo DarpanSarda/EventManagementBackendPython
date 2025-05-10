@@ -24,12 +24,12 @@ class CompanyRepo():
             if companies_collection is None:
                 raise Exception("Database connection failed")
                 
-            print("Inside findcompanies")
+            # print("Inside findcompanies")
             companies_cursor = companies_collection.find({}, {'_id': 0})
             companies = []
             for company in companies_cursor:
                 companies.append(company)
-            print(f"companies repo {companies}")
+            # print(f"companies repo {companies}")
             return companies
             
         except Exception as e:

@@ -24,6 +24,7 @@ class LoginReq(BaseModel):
     password: str
 
 class LoginRes(BaseModel):
+    id: str
     email: EmailStr
     message: Optional[str] = None
     error : Optional[str] = None

@@ -26,7 +26,7 @@ class EventService:
             Exception: If there's an error during the database operation
         """
         try:
-            event = EventsRepo.findEventById(eventId)
+            event = await EventsRepo.findEventById(eventId)
             if not event:
                 return None
             return event

@@ -137,7 +137,7 @@ async def get_event(event_id: str):
         JSONResponse: The event data or error message
     """
     try:
-        event = EventService.getEventById(event_id)
+        event = await EventService.getEventById(event_id)
         if event:
             event = convert_objectid_to_str(event)  # Convert ObjectId to string
             response = {
