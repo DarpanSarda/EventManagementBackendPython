@@ -22,6 +22,8 @@ from pymongo.mongo_client import MongoClient
 from pymongo.server_api import ServerApi
 from dotenv import dotenv_values
 from threading import Lock
+import os
+
 
 class MongoDBSingleton:
     _instance = None
@@ -37,8 +39,7 @@ class MongoDBSingleton:
 
     def _initialize(self):
         """Initialize MongoDB connection."""
-        config = dotenv_values("../.env")
-        uri = config.get("MONGODB")
+        uri = os.environ.get("MONGODB")
         try:
             self.client = MongoClient(uri, server_api=ServerApi('1'))
             self.client.admin.command('ping')
