@@ -1,4 +1,4 @@
-from eventapi import APIRouter, status, Depends
+from fastapi import APIRouter, status, Depends
 from fastapi.responses import JSONResponse
 from schemas.faqsSchema import FAQsSchemaReq
 from services.faqService import FAQService

@@ -1,4 +1,4 @@
-from eventapi import APIRouter , HTTPException , Depends , status
+from fastapi import APIRouter , HTTPException , Depends , status
 from fastapi.responses import JSONResponse
 from schemas.userSchema import UserProfileRes 
 from services.userService import UserService

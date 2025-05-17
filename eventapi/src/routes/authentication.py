@@ -1,4 +1,4 @@
-from eventapi import APIRouter , HTTPException
+from fastapi import APIRouter , HTTPException
 from schemas.authentication import RegistrationReq , RegistrationRes , LoginReq , LoginRes 
 from services.userService import UserService
 from utils.jwt_config import create_access_token

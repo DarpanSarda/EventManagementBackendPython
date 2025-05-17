@@ -1,4 +1,4 @@
-from eventapi import APIRouter, HTTPException, Depends, status
+from fastapi import APIRouter, HTTPException, Depends, status
 from typing import Dict , List
 from schemas.paymentSchema import PaymentSchemaReq, PaymentSchemaRes , VerifyPaymentSchema
 from services.paymentService import PaymentService

@@ -1,4 +1,4 @@
-from eventapi import HTTPException , status , Depends , Security
+from fastapi import HTTPException , status , Depends , Security
 from fastapi.security.api_key import APIKeyHeader
 from jose import JWTError, jwt
 from utils.jwt_config import SECRET_KEY, ALGORITHM
