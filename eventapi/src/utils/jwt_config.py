@@ -7,7 +7,9 @@ config = dotenv_values("../.env")
 
 SECRET_KEY = config.get("JWT_SECRET")
 ALGORITHM = config.get("ALGORITHM")
-ACCESS_TOKEN_EXPIRE_MINUTES = int(config.get("ACCESS_TOKEN_EXPIRE_MINUTES"))
+ACCESS_TOKEN_EXPIRE_MINUTES = config.get("ACCESS_TOKEN_EXPIRE_MINUTES")
+if ACCESS_TOKEN_EXPIRE_MINUTES is not None:
+    ACCESS_TOKEN_EXPIRE_MINUTES = int(ACCESS_TOKEN_EXPIRE_MINUTES)
 
 def create_access_token(data: dict, expires_delta: Optional[timedelta] = None):
     print(f"jwt config file {data} {expires_delta}")
