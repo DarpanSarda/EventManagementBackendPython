@@ -1,4 +1,4 @@
-from fastapi import APIRouter, HTTPException, Depends, status
+from eventapi import APIRouter, HTTPException, Depends, status
 from fastapi.responses import JSONResponse
 from typing import List, Dict
 from schemas.ticketSchema import TicketSchemaReq, TicketSchemaRes , TicketSchemaUpdate

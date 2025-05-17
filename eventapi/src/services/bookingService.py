@@ -5,7 +5,7 @@ from schemas.bookingSchema import BookingSchemaReq,BookingSchemaRes
 from repository.bookings_repo import BookingRepo
 from bson import ObjectId
 from pymongo.errors import PyMongoError
-from fastapi import HTTPException
+from eventapi import HTTPException
 
 class BookingService:
     @staticmethod

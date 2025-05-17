@@ -1,4 +1,4 @@
-from fastapi import APIRouter, status
+from eventapi import APIRouter, status
 from fastapi.responses import JSONResponse
 from schemas.feedbackSchema import FeedbackSchemaReq
 from services.feedbackService import FeedbackService

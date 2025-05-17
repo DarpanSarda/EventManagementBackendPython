@@ -1,4 +1,4 @@
-from fastapi import APIRouter, HTTPException, status, Query
+from eventapi import APIRouter, HTTPException, status, Query
 from typing import List, Optional
 from schemas.offerSchema import OfferSchemaReq, OfferSchemaRes, AdminOfferSchemaReq
 from services.offerService import OfferService

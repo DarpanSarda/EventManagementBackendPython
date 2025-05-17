@@ -1,5 +1,5 @@
 # fastapi/src/routes/booking.py
-from fastapi import APIRouter, HTTPException, status
+from eventapi import APIRouter, HTTPException, status
 from services.bookingService import BookingService
 from schemas.bookingSchema import BookingSchemaReq
 from bson import ObjectId

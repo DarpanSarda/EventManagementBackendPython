@@ -1,4 +1,4 @@
-from fastapi import APIRouter , status , Depends
+from eventapi import APIRouter , status , Depends
 from fastapi.responses import JSONResponse
 from schemas.companiesSchema import CompaniesAdmin
 from services.companiesService import CompaniesService

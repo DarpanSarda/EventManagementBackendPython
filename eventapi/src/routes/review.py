@@ -1,4 +1,4 @@
-from fastapi import APIRouter, status , Depends
+from eventapi import APIRouter, status , Depends
 from fastapi.responses import JSONResponse
 from schemas.reviewSchema import ReviewSchemaReq , PyObjectId
 from services.reviewService import ReviewService

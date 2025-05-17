@@ -1,4 +1,4 @@
-from fastapi import FastAPI
+from eventapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from db.connect import MongoDBSingleton
 from routes.authentication import authRouter
