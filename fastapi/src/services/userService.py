@@ -56,3 +56,15 @@ class UserService:
             "avatar": user["avatar"],
             "_id": user["_id"]
         }
+    
+    @staticmethod
+    async def GetAllUsers():
+        """
+        Get all users from the database
+        """
+        users = await UserRepo.getAllUsers()
+        if users is None:
+            return{
+                "error":"No users found"
+            }
+        return users

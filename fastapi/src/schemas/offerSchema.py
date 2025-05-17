@@ -73,3 +73,61 @@ class OfferSchemaRes(OfferSchemaReq):
                 "updated_at": "2024-01-01T00:00:00"
             }
         }
+
+class AdminOfferSchemaReq(BaseModel):
+    title: str = Field(..., description="Offer title")
+    bank_name: str = Field(..., description="Name of the bank offering the discount")
+    discount_type: DiscountType
+    discount_value: float = Field(..., description="Discount value (percentage or fixed amount)")
+    short_detail: str = Field(..., description="Short description of the offer")
+    image: str = Field(..., description="URL of the bank/offer image")
+    valid_till: datetime = Field(..., description="Offer validity end date")
+    promo_code: str = Field(..., description="Promotional code for the offer")
+    minimum_order_value: float = Field(..., gt=0, description="Minimum order value to apply offer")
+    maximum_discount: float = Field(..., gt=0, description="Maximum discount amount")
+    valid_payment_methods: List[str] = Field(..., description="List of valid payment methods")
+    how_to_avail: List[str] = Field(..., description="Steps to avail the offer")
+    terms_and_conditions: List[str] = Field(..., description="Terms and conditions")
+    is_featured: bool = Field(False, description="Whether the offer is featured")
+    excluded_events: List[str] = Field(default=[], description="List of excluded event IDs")
+    cannot_combine: bool = Field(True, description="Whether offer can be combined with others")
+    
+    @validator('discount_value', 'minimum_order_value', 'maximum_discount', pre=True)
+    def validate_numbers(cls, v):
+        if isinstance(v, str):
+            try:
+                return float(v)
+            except ValueError:
+                raise ValueError(f"Value must be a valid number")
+        return v
+
+    @validator('valid_till', pre=True)
+    def validate_date(cls, v):
+        if isinstance(v, str):
+            try:
+                return datetime.fromisoformat(v.replace('Z', '+00:00'))
+            except ValueError:
+                raise ValueError("Invalid date format. Use ISO format (YYYY-MM-DDTHH:MM:SS)")
+        return v
+
+    @validator('is_featured', 'cannot_combine', pre=True)
+    def validate_booleans(cls, v):
+        if isinstance(v, str):
+            return v.lower() == 'true'
+        return bool(v)
+
+    @validator('valid_payment_methods', 'how_to_avail', 'terms_and_conditions', pre=True)
+    def validate_lists(cls, v):
+        if not isinstance(v, list):
+            raise ValueError("Must be a list")
+        return v
+
+    @validator('discount_type', pre=True)
+    def validate_discount_type(cls, v):
+        if v not in [DiscountType.PERCENTAGE, DiscountType.FIXED]:
+            raise ValueError("Invalid discount type")
+        return v
+
+    class Config:
+        allow_population_by_field_name = True
+        json_encoders = {datetime: str}

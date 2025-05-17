@@ -127,3 +127,18 @@ class BookingService:
             raise HTTPException(status_code=500, detail="Database error occurred")
         except Exception as e:
             raise HTTPException(status_code=400, detail=str(e))
+        
+    @staticmethod
+    async def getAllBookings() -> List[Dict]:
+        """
+        Get All Bookings
+        """
+        try:
+            response = await BookingRepo.getAllBookings()
+            if not response:
+                raise HTTPException(status_code=404, detail="No bookings found")
+            return response
+        except PyMongoError as e:
+            raise HTTPException(status_code=500, detail="Database error occurred")
+        except Exception as e:
+            raise HTTPException(status_code=400, detail=str(e))

@@ -313,3 +313,33 @@ class BookingRepo:
         except Exception as e:
             print(f"Error deleting booking: {str(e)}")
             raise Exception(f"Error deleting booking: {str(e)}")
+        
+
+    @staticmethod
+    async def getAllBookings() -> List[Dict]:
+        """
+        Get all bookings from the database
+        
+        Returns:
+            List[Dict]: List of all booking documents
+            
+        Raises:
+            PyMongoError: If there's an error during database operation
+            Exception: For any other unexpected errors
+        """
+        try:
+            if bookings_collection is None:
+                raise Exception("Database connection not established")
+            
+            cursor = bookings_collection.find()
+            bookings = []
+            for booking in cursor:
+                bookings.append(booking)
+            return bookings
+            
+        except PyMongoError as e:
+            print(f"Database error occurred: {str(e)}")
+            raise Exception(f"Database error occurred: {str(e)}")
+        except Exception as e:
+            print(f"Error retrieving all bookings: {str(e)}")
+            raise Exception(f"Error retrieving all bookings: {str(e)}")

@@ -34,3 +34,16 @@ class UserRepo():
         returned_user = user_collection.insert_one(new_user)
         print("repo response" , returned_user)
         return new_user
+    
+    @staticmethod
+    async def getAllUsers():
+        """
+        Get all users from the database
+        """
+        if user_collection is None:
+            raise Exception("Database connection failed")
+        users_collection = user_collection.find()
+        users = []
+        for user in users_collection:
+            users.append(user)
+        return users

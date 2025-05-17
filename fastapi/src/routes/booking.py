@@ -1,9 +1,10 @@
 # fastapi/src/routes/booking.py
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, status
 from services.bookingService import BookingService
 from schemas.bookingSchema import BookingSchemaReq
 from bson import ObjectId
 from typing import List, Optional, Dict
+from fastapi.responses import JSONResponse
 
 bookingRouter = APIRouter(
     prefix="/bookings",
@@ -22,16 +23,37 @@ async def create_booking(booking_data: BookingSchemaReq):
 @bookingRouter.get("/")
 async def get_bookings():
     try:
-        result = await BookingService.get_bookings()
-        return {"message": "Bookings retrieved successfully", "data": result}
+        bookings = await BookingService.getAllBookings()
+        for booking in bookings:
+            booking["_id"] = str(booking["_id"])
+            booking["user_id"] = str(booking["user_id"])
+            booking["event_id"] = str(booking["event_id"])
+        return bookings
     except HTTPException as e:
         raise e
 
 @bookingRouter.get("/{booking_id}")
 async def get_booking(booking_id: str):
     try:
-        result = await BookingService.get_booking_by_id(booking_id)
-        return {"message": "Booking retrieved successfully", "data": result}
+        booking = await BookingService.get_booking_by_id(booking_id)
+        if booking:
+            booking["_id"] = str(booking["_id"])
+            booking["user_id"] = str(booking["user_id"])
+            booking["event_id"] = str(booking["event_id"])
+            booking["booking_date"] = booking["booking_date"].isoformat() if booking.get("booking_date") else None
+            booking["created_at"] = booking["created_at"].isoformat() if booking.get("created_at") else None
+            print(f"Booking found: {booking}")
+            response = {
+                "status": "success",
+                "data": booking,
+            }
+            return JSONResponse(content=response, status_code=status.HTTP_200_OK)
+        
+        response = {
+            "status": "failed",
+            "message": "Event not found",
+        }
+        return JSONResponse(content=response, status_code=status.HTTP_404_NOT_FOUND)
     except HTTPException as e:
         raise e
 

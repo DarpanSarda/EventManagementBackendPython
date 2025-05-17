@@ -61,18 +61,19 @@ class OffersRepo:
         try:
             if offers_collection is None:
                 raise Exception("Database connection not initialized")
-                
-            # Remove _id if present in update data
-            if "_id" in offer_data:
-                del offer_data["_id"]
-                
-            result = await offers_collection.update_one(
-                {"_id": ObjectId(offer_id)},
-                {"$set": offer_data}
-            )
+
+            existing_offer = await OffersRepo.find_offer_by_id(offer_id)
+            if not existing_offer:
+                raise Exception("Offer not found")
+
+            update_data = offer_data if isinstance(offer_data, dict) else offer_data.model_dump(exclude_unset=True)
+
+            result = offers_collection.update_one({"_id": ObjectId(offer_id)}, {"$set": update_data})
+
+            if result.modified_count > 0:
+                updated_offer = await OffersRepo.find_offer_by_id(offer_id)
+                return updated_offer    
             
-            if result.modified_count:
-                return await OffersRepo.find_offer_by_id(offer_id)
             return None
         except Exception as e:
             raise Exception(f"Error updating offer: {str(e)}")

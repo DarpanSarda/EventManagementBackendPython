@@ -2,6 +2,7 @@ from models import event
 from db.connect import MongoDBSingleton
 from bson import ObjectId
 from schemas.eventSchema import EventSchemaAdminReq
+import re
 
 db = MongoDBSingleton().get_database()
 if db is not None:
@@ -47,11 +48,7 @@ class EventsRepo():
     @staticmethod
     def findEventByName(eventName : str):
         return events_collection.find_one({"name": eventName})
-    
-    @staticmethod
-    def findEventByCategory(eventCategory : str):
-        return events_collection.find_one({"category": eventCategory})
-    
+        
     @staticmethod
     def findEventByStateName(stateName : str):
         return events_collection.find_one({"state": stateName})
@@ -72,3 +69,59 @@ class EventsRepo():
             return None
         except Exception as e:
             raise Exception(f"Error creating event: {str(e)}")
+        
+    @staticmethod
+    async def updateEvent(eventId : str , event : EventSchemaAdminReq):
+        """
+        update event
+        """
+        try:
+            print(f"eeefefererrfef {event}")
+            if events_collection is None:
+                raise Exception("Database connection failed")
+            existing_event = await EventsRepo.findEventById(eventId)
+            print(f"exxxxxx {existing_event}")
+            if not existing_event:
+                raise Exception("Event not found")
+            update_data = event if isinstance(event, dict) else event.model_dump(exclude_unset=True)
+            print(f"upppppppp {update_data}")
+            result = events_collection.update_one(
+                {"_id": ObjectId(eventId)},
+                {"$set": update_data}
+            )
+
+            print(f"Modified count: {result.modified_count}")
+        
+            if result.modified_count > 0:
+                # Get and return the updated document
+                updated_event = await EventsRepo.findEventById(eventId)
+                return updated_event
+                
+            return None
+        except Exception as e:
+            raise Exception(f"Error updating event: {str(e)}")
+
+
+    @staticmethod
+    async def geteventbycategory(category: str):
+        """
+        Get events by partial category name match using regex
+        Returns list of events matching the category pattern
+        """
+        try:
+            if events_collection is None:
+                raise Exception("Database connection failed")
+            # Find all events matching the category pattern
+            cursor = events_collection.find({"$text": {"$search": "music"}})
+            events = []
+            for event in cursor:
+                events.append(event)
+            # Transform events to handle ObjectId
+            transformed_events = []
+            for event in events:
+                event['_id'] = str(event['_id'])
+                transformed_events.append(event)
+            return transformed_events
+        except Exception as e:
+            print(f"Error in geteventbycategory: {str(e)}")
+            raise Exception(f"Error fetching events by category: {str(e)}")

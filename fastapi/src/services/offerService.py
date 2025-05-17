@@ -1,7 +1,7 @@
 from typing import List, Optional, Dict
 from datetime import datetime
 from repository.offers_repo import OffersRepo
-from schemas.offerSchema import OfferSchemaReq, OfferSchemaRes
+from schemas.offerSchema import OfferSchemaReq, OfferSchemaRes, AdminOfferSchemaReq
 from models.offers import DiscountType
 
 class OfferService:
@@ -56,19 +56,11 @@ class OfferService:
             raise Exception(f"Failed to fetch offer: {str(e)}")
 
     @staticmethod
-    async def update_offer(offer_id: str, offer_data: OfferSchemaReq) -> Dict:
+    async def update_offer(offer_id: str, offer_data: AdminOfferSchemaReq) -> Dict:
         """Update an existing offer"""
         try:
-            # Verify offer exists
-            existing_offer = await OffersRepo.find_offer_by_id(offer_id)
-            if not existing_offer:
-                raise Exception("Offer not found")
-            
-            # Update tracking fields
-            update_data = offer_data.dict()
-            update_data["updated_at"] = datetime.utcnow()
-            
-            updated_offer = await OffersRepo.update_offer(offer_id, update_data)
+            print("Inside offer update service")
+            updated_offer = await OffersRepo.update_offer(offer_id , offer_data)
             if not updated_offer:
                 raise Exception("Failed to update offer")
             return updated_offer

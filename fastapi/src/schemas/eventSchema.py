@@ -39,19 +39,45 @@ class EventSchemaRes(BaseModel):
     class Config:
         arbitrary_types_allowed = True
 
+
+class About(BaseModel):
+    amenities: Optional[List[str]]
+    lineup: Optional[List[str]]
+    overview: Optional[str]
+
+class Timings(BaseModel):
+    eventEnd: Optional[str]
+    gateOpening: Optional[str]
+    lastEntry: Optional[str]
+
+class AdditionalInfo(BaseModel):
+    guidelines: Optional[List[str]]
+    prohibited: Optional[List[str]]
+    timings: Timings
+
+class Slots(BaseModel):
+    description: Optional[str]
+    name: Optional[str]
+    price: Optional[int]
+    status: Optional[str]
+
 class EventSchemaAdminReq(BaseModel):
-    id:str
-    name : str
-    category : str
-    state : str
-    city : str
-    venue : str
-    date : str
-    description : str
-    price : Dict[str , float]
-    organizer : str
-    tags : List[str]
-    image : List[str]
+    about: Optional[About]
+    additionalInfo: Optional[AdditionalInfo]
+    category: Optional[str]
+    city: Optional[str]
+    date: Optional[str]
+    description: Optional[str]
+    image: Optional[List[str]]
+    organizer: Optional[str]
+    price: Optional[int]
+    slots: Optional[List[Slots]]
+    state: Optional[str]
+    tags: Optional[List[str]]
+    time: Optional[str]
+    title: Optional[str]
+    venue: Optional[str]
+
 
     class Config:
         arbitrary_types_allowed = True

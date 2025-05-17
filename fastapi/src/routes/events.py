@@ -202,7 +202,70 @@ async def get_event_by_name(event_name: str):
         }
         return JSONResponse(content=response, status_code=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
-# @eventRouter.get("/")
-# async def get_event_by_category(event_category: str):
-#     pass
-
+@eventRouter.put("/{event_id}", response_model=EventSchemaAdminReq)
+async def update_event(event_id: str, event: EventSchemaAdminReq):
+    """
+    Update an event by its ID
+    
+    Args:
+        event_id (str): The ID of the event to update
+        event (EventSchemaAdminReq): The updated event data
+        
+    Returns:
+        JSONResponse: The updated event data or error message
+    """
+    print("route event update")
+    try:
+        print("Inside tryyy", event)
+        updated_event = await EventService.updateEvent(event_id, event)
+        if updated_event:
+            updated_event = convert_objectid_to_str(updated_event)  # Convert ObjectId to string
+            response = {
+                "status": "success",
+                "data": updated_event,
+                "message": "Event updated successfully",
+            }
+            return JSONResponse(content=response, status_code=status.HTTP_200_OK)
+        
+        response = {
+            "status": "failed",
+            "message": "Event not found or update failed",
+        }
+        return JSONResponse(content=response, status_code=status.HTTP_404_NOT_FOUND)
+        
+    except Exception as e:
+        response = {
+            "status": "error",
+            "message": str(e),
+        }
+        return JSONResponse(content=response, status_code=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    
+@eventRouter.get("/category/{categoryName}")
+async def get_event_by_category(categoryName: str):
+    """
+    Get events By category name
+    Args:
+        categoryName (str): The category name to filter events by
+    Returns:
+        JSONResponse: The filtered events data or error message
+    """
+    try:
+        events =  await EventService.getEventsBycategory(categoryName)
+        if events:
+            events = convert_objectid_to_str(events)
+            response = {
+                "status": "success",
+                "data": events,
+            }
+            return JSONResponse(content=response, status_code=status.HTTP_200_OK)
+        response = {
+            "status": "failed",
+            "message": "No events found for the given category",
+        }
+        return JSONResponse(content=response, status_code=status.HTTP_404_NOT_FOUND)
+    except Exception as e:
+        response = {
+            "status": "error",
+            "message": str(e),
+        }
+        return JSONResponse(content=response, status_code=status.HTTP_500_INTERNAL_SERVER_ERROR)

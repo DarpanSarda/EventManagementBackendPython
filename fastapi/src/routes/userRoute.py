@@ -40,3 +40,25 @@ async def get_user_profile(current_user: Annotated[str, Depends(get_current_user
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Failed to retrieve user profile: {str(e)}"
         )
+    
+@userRouter.get("/")
+async def get_all_users():
+    """
+    Get a list of all users.
+    """
+    try:
+        # Get all users from the database
+        response = await UserService.GetAllUsers()
+        for res in response:
+            res['_id'] = str(res['_id'])
+        if "error" in response:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail=response["error"]
+            )
+        return response
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Failed to retrieve users: {str(e)}"
+        )

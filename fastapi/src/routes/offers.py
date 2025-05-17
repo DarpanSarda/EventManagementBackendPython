@@ -1,13 +1,25 @@
 from fastapi import APIRouter, HTTPException, status, Query
 from typing import List, Optional
-from schemas.offerSchema import OfferSchemaReq, OfferSchemaRes
+from schemas.offerSchema import OfferSchemaReq, OfferSchemaRes, AdminOfferSchemaReq
 from services.offerService import OfferService
 from datetime import datetime
+from bson import ObjectId
+from fastapi.responses import JSONResponse
 
 offerRouter = APIRouter(
     prefix="/offers",
     tags=["offers"],
 )
+
+def convert_objectid_to_str(data):
+    """Recursively convert ObjectId fields in a dictionary to strings."""
+    if isinstance(data, dict):
+        return {k: convert_objectid_to_str(v) for k, v in data.items()}
+    elif isinstance(data, list):
+        return [convert_objectid_to_str(item) for item in data]
+    elif isinstance(data, ObjectId):
+        return str(data)  # Convert ObjectId to string
+    return data  # Return as is if it's not an ObjectId
 
 @offerRouter.get("/", response_model=List[OfferSchemaRes])
 async def get_offers(active_only: bool = Query(False, description="Filter active offers only")):
@@ -80,12 +92,24 @@ async def get_offer(offer_id: str):
             detail=str(e)
         )
 
-@offerRouter.put("/{offer_id}", response_model=OfferSchemaRes)
-async def update_offer(offer_id: str, offer: OfferSchemaReq):
+@offerRouter.put("/{offer_id}")
+async def update_offer(offer_id: str, offer: AdminOfferSchemaReq):
     """Update an existing offer"""
     try:
         updated_offer = await OfferService.update_offer(offer_id, offer)
-        return updated_offer
+        print("Updated offer:", updated_offer)
+        if updated_offer:
+            updated_offer['_id'] = str(updated_offer['_id'])
+            updated_offer["valid_till"] = updated_offer["valid_till"].isoformat()
+            updated_offer["created_at"] = updated_offer["created_at"].isoformat() if "created_at" in updated_offer else None
+            updated_offer["updated_at"] = updated_offer["updated_at"].isoformat() if "updated_at" in updated_offer else None
+            print("jfksajdfdf")
+            response = {
+                "status": "success",
+                "data": updated_offer,
+                "message": "Event updated successfully",
+            }
+            return JSONResponse(content=response, status_code=status.HTTP_200_OK)
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
