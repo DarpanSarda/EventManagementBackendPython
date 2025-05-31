@@ -40,14 +40,13 @@ class OffersRepo:
             raise Exception(f"Error finding offer: {str(e)}")
 
     @staticmethod
-    async def find_all_offers(active_only: bool = False) -> List[dict]:
+    async def find_all_offers() -> List[dict]:
         """Find all offers with optional active only filter"""
         try:
             if offers_collection is None:
                 raise Exception("Database connection not initialized")
                 
-            filter_query = {"is_active": True} if active_only else {}
-            cursor = offers_collection.find(filter_query)
+            cursor = offers_collection.find({})
             offers = []
             for offer in cursor:
                 offers.append(offer)

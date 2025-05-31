@@ -21,9 +21,12 @@ class EventsRepo():
     
             print("Fetching events from database...")
             # Remove the '_id': 0 projection to allow ID conversion
+            print(f"Events collection: {events_collection.find({})}")
             events_cursor = events_collection.find({})
+            print(f"Events cursor: {events_cursor}")
             events = []
             for event in events_cursor:
+                print(f"Event: {event}")
                 events.append(event)
 
             # Transform the events to handle ObjectId
