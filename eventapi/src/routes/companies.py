@@ -21,7 +21,7 @@ def convert_objectid_to_str(data):
         return str(data)  # Convert ObjectId to string
     return data  # Return as is if it's not an ObjectId
 
-@companyRouter.post("/", dependencies=[Depends(admin_only)] , response_model=CompaniesAdmin)
+@companyRouter.post("/" , response_model=CompaniesAdmin)
 async def create_company(company: CompaniesAdmin):
     """
     Create a new company - Admin only endpoint

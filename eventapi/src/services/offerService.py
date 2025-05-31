@@ -23,10 +23,10 @@ class OfferService:
             raise Exception(f"Failed to create offer: {str(e)}")
 
     @staticmethod
-    async def get_all_offers(active_only: bool = False) -> List[Dict]:
+    async def get_all_offers() -> List[Dict]:
         """Get all offers with optional active only filter"""
         try:
-            offers = await OffersRepo.find_all_offers(active_only)
+            offers = await OffersRepo.find_all_offers()
             return offers
         except Exception as e:
             raise Exception(f"Failed to fetch offers: {str(e)}")

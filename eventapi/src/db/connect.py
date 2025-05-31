@@ -20,11 +20,12 @@
 
 from pymongo.mongo_client import MongoClient
 from pymongo.server_api import ServerApi
-from dotenv import dotenv_values
 from threading import Lock
+from dotenv import load_dotenv
 import os
+from pathlib import Path
 
-
+load_dotenv(Path(__file__).parent.parent.parent / '.env')
 class MongoDBSingleton:
     _instance = None
     _lock = Lock()

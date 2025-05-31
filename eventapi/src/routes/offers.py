@@ -22,10 +22,10 @@ def convert_objectid_to_str(data):
     return data  # Return as is if it's not an ObjectId
 
 @offerRouter.get("/", response_model=List[OfferSchemaRes])
-async def get_offers(active_only: bool = Query(False, description="Filter active offers only")):
+async def get_offers():
     """Get all offers with optional active only filter"""
     try:
-        offers = await OfferService.get_all_offers(active_only)
+        offers = await OfferService.get_all_offers()
         for offer in offers:
             offer['_id'] = str(offer['_id'])
         return offers
