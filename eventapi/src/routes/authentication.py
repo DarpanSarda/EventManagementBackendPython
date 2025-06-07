@@ -11,7 +11,7 @@ authRouter = APIRouter(
 
 
 @authRouter.post("/register" , response_model=RegistrationRes)
-def user_register(user : RegistrationReq):
+async def user_register(user : RegistrationReq):
     print("router : " , user)
     response = UserService.RegisterUser(user)
     print("auth route register " , response)
@@ -28,10 +28,10 @@ def user_register(user : RegistrationReq):
     }
 
 @authRouter.post("/login" , response_model = LoginRes)
-def login_user(user : LoginReq):
+async def login_user(user : LoginReq):
     print("router login" , user)
 
-    response = UserService.LoginUser(user)
+    response =await UserService.LoginUser(user)
     print(f"response : {response}")
     if "error" in response:
         raise HTTPException(status_code = 400 , detail = response["error"])

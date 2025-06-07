@@ -1,10 +1,12 @@
 from repository.user_repo import UserRepo
 from schemas.authentication import RegistrationReq , LoginReq
 import bcrypt
+from services.Kafka.publisher import KafkaPublisher
 
 class UserService:
+    kafka_publisher = KafkaPublisher()
     @staticmethod
-    def RegisterUser(user : RegistrationReq):
+    async def RegisterUser(user : RegistrationReq):
         """Register a user after checking if email is not exists"""
         ifUserPresent = UserRepo.findUserByEmail(user.email)
         if ifUserPresent:
@@ -17,6 +19,14 @@ class UserService:
         hash_password =  bcrypt.hashpw(user.password.encode('utf-8') , bcrypt.gensalt())
         user.password = hash_password.decode('utf-8')
         newUser =UserRepo.insertUser(user)
+        await UserService.kafka_publisher.publish(
+            user_id=str(newUser["_id"]),
+            action="register",
+            details={
+                "email": newUser["email"],
+                "name": newUser["name"]
+            }
+        )
         return{
             "name": newUser["name"],
             "lastname": newUser["lastname"],
@@ -27,7 +37,7 @@ class UserService:
         }
     
     @staticmethod
-    def LoginUser(user : LoginReq):
+    async def LoginUser(user : LoginReq):
         """Login a user by checking email exists"""
         ifUserPresent = UserRepo.findUserByEmail(user.email)
         if ifUserPresent is None:
@@ -35,6 +45,15 @@ class UserService:
                 "error":"Please Logon First"
             }
         print("service login " , ifUserPresent)
+        user_id = str(ifUserPresent["_id"])
+        await UserService.kafka_publisher.publish(
+            user_id=user_id,
+            action="login",
+            details={
+                "email": ifUserPresent["email"],
+                "name": ifUserPresent["name"]
+            }
+        )
         return{
             "messge":"Login success",
             "_id":ifUserPresent["_id"],

@@ -6,8 +6,10 @@ from repository.bookings_repo import BookingRepo
 from bson import ObjectId
 from pymongo.errors import PyMongoError
 from fastapi import HTTPException
+from services.Kafka.publisher import KafkaPublisher
 
 class BookingService:
+    kafka_publisher = KafkaPublisher()
     @staticmethod
     async def create_booking(booking_data: BookingSchemaReq) -> Optional[Dict]:
         print(f"create_booking : {booking_data}")
@@ -43,6 +45,17 @@ class BookingService:
                             doc[key] = convert_object_ids(value)
                     return doc
                 result = convert_object_ids(result)
+                # Publish to Kafka
+                await BookingService.kafka_publisher.publish(
+                    user_id=str(result["user_id"]),
+                    action="booking_created",
+                    details={
+                        "event_id": str(result["event_id"]),
+                        "slot_name": result["slot_name"],
+                        "quantity": result["quantity"],
+                        "total_amount": result["total_amount"]
+                    }
+                )
                 return BookingSchemaRes(**result)
             return None
         except PyMongoError as e:
